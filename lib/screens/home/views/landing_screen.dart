@@ -28,7 +28,7 @@ class LandingPageState extends State<LandingPage> {
     {
       'label': 'Find the Landmark',
       'image': 'assets/images/2.png',
-      'screen': const FindLandmarkScreen()
+      'screen': FindLandmarkScreen()
     },
     {'label': 'To be added', 'image': 'assets/images/3.png'},
     {'label': 'To be added', 'image': 'assets/images/4.png'},

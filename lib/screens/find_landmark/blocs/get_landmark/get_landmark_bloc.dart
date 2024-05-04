@@ -36,5 +36,10 @@ class GetLandmarkBloc extends Bloc<GetLandmarkEvent, GetLandmarkState> {
         emit(LandmarkError('Failed to detect landmarks: ${e.toString()}'));
       }
     });
+
+    on<ResetStateEvent>((event, emit) {
+      print("ResetStateEvent received");
+      emit(ImageInitial());
+    });
   }
 }

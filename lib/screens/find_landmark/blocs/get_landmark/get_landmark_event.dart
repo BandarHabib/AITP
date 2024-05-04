@@ -16,3 +16,5 @@ class UploadImage extends GetLandmarkEvent {
 class FindLandmark extends GetLandmarkEvent {
   FindLandmark(File image);
 }
+
+class ResetStateEvent extends GetLandmarkEvent {}
