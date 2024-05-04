@@ -1,0 +1,4 @@
+curl -X GET -H 'Content-Type: application/json' \
+-H "X-Goog-Api-Key: AIzaSyDdHDqf65HtQ-vUiaVPZ_yu17hc8yuZsBc" \
+-H "X-Goog-FieldMask: id,displayName,priceLevel,rating,location,primaryType,primaryTypeDisplayName" \
+https://places.googleapis.com/v1/places/ChIJkZ06tuaJ6RURGjTa3RZkcxI

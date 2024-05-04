@@ -1,0 +1,48 @@
+name: tp_app
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.2.3 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  font_awesome_flutter: ^10.6.0
+
+  firebase_core: ^2.16.0
+
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.5
+  equatable: ^2.0.5
+  lottie: ^3.1.0
+  http: ^1.2.1
+  http_parser: ^4.0.2
+  image_picker: ^1.1.1
+
+  carousel_slider: ^4.2.1
+
+  user_repository:
+    path: packages/user_repository
+  attraction_repository:
+    path: packages/attraction_repository
+  landmark_repository:
+    path: packages/landmark_repository
+  flutter_svg: ^2.0.10+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/animation/
+    - assets/images/
+    - assets/svg/
+    - assets/images/cities/
