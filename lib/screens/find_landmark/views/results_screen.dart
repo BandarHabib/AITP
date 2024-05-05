@@ -19,7 +19,7 @@ class ResultsScreen extends StatelessWidget {
             title: Text(landmarks[index]
                 .description), // Assuming `Landmark` has a `name` field
             subtitle: Text(
-                'score: ${landmarks[index].confidence}'), // Assuming `Landmark` has a `description` field
+                'score: ${landmarks[index].score}'), // Assuming `Landmark` has a `description` field
           );
         },
       ),
