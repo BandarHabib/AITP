@@ -13,6 +13,8 @@ dependencies:
   font_awesome_flutter: ^10.6.0
 
   firebase_core: ^2.16.0
+  cloud_firestore: ^4.17.2
+  firebase_auth: ^4.19.4
 
   bloc: ^8.1.4
   flutter_bloc: ^8.1.5
@@ -23,6 +25,7 @@ dependencies:
   http_parser: ^4.0.2
   image_picker: ^1.1.1
   url_launcher: ^6.2.6
+  flutter_svg: ^2.0.10+1
 
   user_repository:
     path: packages/user_repository
@@ -30,7 +33,6 @@ dependencies:
     path: packages/attraction_repository
   landmark_repository:
     path: packages/landmark_repository
-  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:tp_app/screens/auth/blocs/sing_in_bloc/sign_in_bloc.dart';
 import 'package:tp_app/screens/find_landmark/views/find_landmark_screen.dart';
 import 'package:tp_app/screens/plan_trip/views/preferences_screen.dart';
+import 'package:tp_app/screens/user/views/user_profile_screen.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -58,14 +59,24 @@ class LandingPageState extends State<LandingPage> {
             AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              leading:
-                  IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+              leading: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {},
+              ),
               actions: <Widget>[
-                IconButton(
+                PopupMenuButton<int>(
                   icon: const Icon(Icons.account_circle),
-                  onPressed: () {
-                    context.read<SignInBloc>().add(SignOutRequired());
-                  },
+                  onSelected: (item) => selectedItem(context, item),
+                  itemBuilder: (context) => [
+                    const PopupMenuItem<int>(
+                      value: 0,
+                      child: Text('Profile'),
+                    ),
+                    const PopupMenuItem<int>(
+                      value: 1,
+                      child: Text('Logout'),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -173,5 +184,21 @@ class LandingPageState extends State<LandingPage> {
         ),
       ),
     );
+  }
+
+  void selectedItem(BuildContext context, int index) {
+    switch (index) {
+      case 0: // Profile
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  const UserProfileScreen()), // Adjust as necessary
+        );
+        break;
+      case 1: // Logout
+        context.read<SignInBloc>().add(SignOutRequired());
+        break;
+    }
   }
 }
