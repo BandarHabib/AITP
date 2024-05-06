@@ -5,7 +5,7 @@ final ThemeData appThemeData = ThemeData(
     primary: const Color(0xFF006D5B), // Your existing primary color
     secondary: const Color.fromARGB(
         255, 88, 50, 155), // Deep Purple as the new secondary color
-    background: const Color(0xFFFDF5E6),
+    background: const Color.fromARGB(255, 226, 220, 207),
     onBackground: const Color(0xFF36454F),
   ),
   buttonTheme: const ButtonThemeData(

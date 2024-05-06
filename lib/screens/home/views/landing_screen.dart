@@ -105,15 +105,16 @@ class LandingPageState extends State<LandingPage> {
                 return GestureDetector(
                   onTap: () => _carouselController.animateToPage(entry.key),
                   child: Container(
-                    width: 12.0,
-                    height: 12.0,
+                    width: 20.0,
+                    height: 6.0,
                     margin: const EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 4.0),
+                        vertical: 14.0, horizontal: 8.0),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      shape: BoxShape.rectangle,
                       color: _current == entry.key
                           ? theme.colorScheme.secondary
                           : theme.colorScheme.onBackground.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(4.0),
                     ),
                   ),
                 );
