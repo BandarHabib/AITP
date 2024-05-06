@@ -18,11 +18,11 @@ dependencies:
   flutter_bloc: ^8.1.5
   equatable: ^2.0.5
   lottie: ^3.1.0
+  carousel_slider: ^4.2.1
   http: ^1.2.1
   http_parser: ^4.0.2
   image_picker: ^1.1.1
-
-  carousel_slider: ^4.2.1
+  url_launcher: ^6.2.6
 
   user_repository:
     path: packages/user_repository

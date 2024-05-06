@@ -42,7 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.tertiary),
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   Align(
@@ -62,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   Align(
                     alignment: Alignment.center,
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.7, // here
+                      height: MediaQuery.of(context).size.height / 1.7,
                       child: Column(
                         children: [
                           Padding(

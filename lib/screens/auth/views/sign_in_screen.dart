@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../components/my_text_field.dart';
-import '../blocs/sing_in_bloc/sign_in_bloc.dart';
+import 'package:tp_app/components/my_text_field.dart';
+import 'package:tp_app/screens/auth/blocs/sing_in_bloc/sign_in_bloc.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -87,11 +86,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: () {
                       setState(() {
                         obscurePassword = !obscurePassword;
-                        if (obscurePassword) {
-                          iconPassword = CupertinoIcons.eye_fill;
-                        } else {
-                          iconPassword = CupertinoIcons.eye_slash_fill;
-                        }
+                        iconPassword = obscurePassword
+                            ? CupertinoIcons.eye_fill
+                            : CupertinoIcons.eye_slash_fill;
                       });
                     },
                     icon: Icon(iconPassword),
