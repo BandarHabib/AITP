@@ -51,4 +51,18 @@ class Attraction {
       macros: entity.macros,
     );
   }
+
+  factory Attraction.fromJson(Map<String, dynamic> json) {
+    return Attraction(
+      attractionId: json['attractionId'] ?? '',
+      placeId: json['Place ID'] ?? '',
+      name: json['Store Name'] ?? '',
+      description: json['Overview'] ?? '',
+      picture: json['picture'] ?? '',
+      category: json['Category'] ?? '',
+      expenses: json['Expenses'] ?? 0,
+      stars: (json['Rating'] ?? 0).toDouble(),
+      macros: Macros.fromJson(json['macros'] ?? {}),
+    );
+  }
 }

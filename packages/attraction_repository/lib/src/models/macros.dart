@@ -29,4 +29,13 @@ class Macros {
         capacity: entity.capacity,
         link: entity.link);
   }
+
+  factory Macros.fromJson(Map<String, dynamic> json) {
+    return Macros(
+      price: json['price'] ?? 0, // Defaulting to 0 if null
+      reviews: json['reviews'] ?? 0, // Defaulting to 0 if null
+      capacity: json['capacity'] ?? 0, // Defaulting to 0 if null
+      link: json['link'] ?? '', // Defaulting to empty string if null
+    );
+  }
 }
