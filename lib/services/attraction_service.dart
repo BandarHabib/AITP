@@ -1,3 +1,4 @@
+import 'package:attraction_repository/attraction_repository.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -20,7 +21,8 @@ class AttractionService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList.map((json) => Attraction.fromJson(json)).toList();
       } else {
         throw Exception('Failed to retrieve matches');
       }

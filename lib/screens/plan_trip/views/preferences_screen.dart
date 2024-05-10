@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/attraction_service.dart';
+import 'package:tp_app/screens/plan_trip/views/attraction_results_screen.dart'; // Make sure this import points to your AttractionResultsScreen
 
 class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
@@ -45,19 +46,21 @@ class __PreferencesFormState extends State<_PreferencesForm> {
     try {
       var matches = await _attractionService.getAttractions(
           selectedCity!, selectedCategories);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Matches Found'),
-            content: Text(matches
-                .toString()), // Display the results in a simple way, adjust as needed
-          );
-        },
-      );
+      if (matches.isNotEmpty) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AttractionResultsScreen(attractions: matches),
+            ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No matches found')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Error fetching attractions: $e')),
       );
     }
   }
@@ -81,12 +84,11 @@ class __PreferencesFormState extends State<_PreferencesForm> {
                       onChanged: (bool? value) {
                         if (value != null) {
                           setDialogState(() {
-                            // This now refers to the StateSetter of StatefulBuilder
                             if (value) {
                               tempSelectedCategories.add(category);
                             } else {
                               tempSelectedCategories
-                                  .removeWhere((String c) => c == category);
+                                  .removeWhere((c) => c == category);
                             }
                           });
                         }
@@ -103,9 +105,7 @@ class __PreferencesFormState extends State<_PreferencesForm> {
                 TextButton(
                   child: const Text('OK'),
                   onPressed: () {
-                    // Update the main widget's state when the dialog is closed with 'OK'
                     setState(() {
-                      // This refers to the setState of the main widget
                       selectedCategories = tempSelectedCategories;
                     });
                     Navigator.of(context).pop();
@@ -130,7 +130,6 @@ class __PreferencesFormState extends State<_PreferencesForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // First Drop Down Menu for selecting city
             DropdownButtonFormField<String>(
               value: selectedCity,
               onChanged: (newValue) {
@@ -150,7 +149,6 @@ class __PreferencesFormState extends State<_PreferencesForm> {
               ),
             ),
             const SizedBox(height: 16.0),
-            // Second Drop Down Menu for selecting categories
             ListTile(
               title: const Text('Select Categories'),
               subtitle: Text(selectedCategories.join(', ')),
@@ -161,7 +159,6 @@ class __PreferencesFormState extends State<_PreferencesForm> {
               ),
             ),
             const SizedBox(height: 16.0),
-            // Button to submit preferences
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Center(
