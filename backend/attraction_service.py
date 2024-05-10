@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import pandas as pd
+import ast
 
 app = Flask(__name__)
 
@@ -7,9 +8,8 @@ app = Flask(__name__)
 file_path = 'backend\datasets\output_with_ratings.xlsx'
 data = pd.read_excel(file_path)
 
-data['Normalized Stars'] = (data['Stars'] - data['Stars'].min()) / (data['Stars'].max() - data['Stars'].min())
-data['Normalized Reviews'] = (data['Number of Reviews'] - data['Number of Reviews'].min()) / (data['Number of Reviews'].max() - data['Number of Reviews'].min())
-data['Normalized Top Score'] = (data['Top Score'] - data['Top Score'].min()) / (data['Top Score'].max() - data['Top Score'].min())
+data['Normalized Rating'] = (data['Rating'] - data['Rating'].min()) / (data['Rating'].max() - data['Rating'].min())
+data['Normalized Total User Ratings'] = (data['Total User Ratings'] - data['Total User Ratings'].min()) / (data['Total User Ratings'].max() - data['Total User Ratings'].min())
 
 @app.route('/get_attractions', methods=['POST'])
 def get_attractions(content):
@@ -20,33 +20,42 @@ def get_attractions(content):
     top_matches = pd.DataFrame()
     for category in user_preferences:
         category_data = data[(data['City'].str.lower() == city.lower()) & (data['Top Category'] == category)]
-        category_data['Combined Score'] = 0.1 * category_data['Normalized Stars'] + 0.4 * category_data['Normalized Reviews'] + 0.5 * category_data['Normalized Top Score']
+        category_data['Combined Score'] = 0.2 * category_data['Normalized Rating'] + 0.8 * category_data['Normalized Total User Ratings']
         top_category_matches = category_data.sort_values(by='Combined Score', ascending=False).head(2)
         top_matches = pd.concat([top_matches, top_category_matches])
-    
+
     print("\nTop matches based on your preferences:")
     for category in user_preferences:
         print(f"\nCategory: {category}")
         category_matches = top_matches[top_matches['Top Category'] == category]
         for _, match in category_matches.iterrows():
-            print(f"Store Name: {match['Store Name']}")
+            print(f"Store Name: {match['Name']}")
             print(f"City: {match['City']}")
-            print(f"Stars: {match['Stars']}")
-            print(f"Reviews: {match['Number of Reviews']}")
+            print(f"Rating: {match['Rating']}")
+            print(f"Reviews: {match['Total User Ratings']}")
             print(f"Score: {match['Combined Score']:.2f}")
     
     results = []
     for _, match in top_matches.iterrows():
         results.append({
-            'Place ID': str(match['Place ID']),  # Convert IDs to string if they are not serializable
-            'Store Name': match['Store Name'],
+            'Place ID': str(match['place_id']),  # Convert IDs to string if they are not serializable
+            'Store Name': match['Name'],
             'City': match['City'],
-            'Top Category': match['Top Category'],
-            'Stars': float(match['Stars']),  # Ensure numeric types are serializable
-            'Number of Reviews': int(match['Number of Reviews']),
-            'Combined Score': float(match['Combined Score'])  # Convert to float if it's not already
+            'Category': match['Category'],
+            'Rating': float(match['Rating']),
+            'Combined Score': float(match['Combined Score']),
+            'Overview': match['Overview'],
+            'Photos': match['Photo URLs'],
+            'Expenses': int(match['Price_level']) if pd.notna(match['Price_level']) else 0,
+            'macros': {
+                'price': int(match['Price_level']) if pd.notna(match['Price_level']) else 0,
+                'reviews': int(match['Total User Ratings']),
+                'capacity': 0,
+                'link': match['URL']
+            }
+
         })
-    return results  # Make sure this is what you pass to jsonify()
+    return results
 
 
 if __name__ == '__main__':
