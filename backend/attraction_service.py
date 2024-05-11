@@ -45,7 +45,7 @@ def get_attractions(content):
             'Rating': float(match['Rating']),
             'Combined Score': float(match['Combined Score']),
             'Overview': match['Overview'],
-            'Photos': match['Photo URLs'],
+            'Photos': ast.literal_eval(match['photos']) if isinstance(match['photos'], str) else match['photos'],
             'Expenses': int(match['Price_level']) if pd.notna(match['Price_level']) else 0,
             'macros': {
                 'price': int(match['Price_level']) if pd.notna(match['Price_level']) else 0,

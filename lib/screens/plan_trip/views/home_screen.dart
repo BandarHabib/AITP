@@ -86,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                                   aspectRatio:
                                       1.2, // Ensures the image is square, adjust ratio as needed
                                   child: Image.network(
-                                    state.attractions[i].picture,
+                                    state.attractions[i].photos[1],
                                     fit: BoxFit.cover,
                                   ),
                                 ),

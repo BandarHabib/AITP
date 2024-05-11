@@ -37,10 +37,20 @@ class DetailsScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius:
                     BorderRadius.circular(30.0), // Image specific corner radius
-                child: Image.network(
-                  attraction.picture,
-                  fit: BoxFit.cover, // Ensure the image covers the box area
-                ),
+                child: attraction.photos.isNotEmpty
+                    ? PageView.builder(
+                        itemCount: attraction.photos.length,
+                        itemBuilder: (context, index) {
+                          return Image.network(
+                            attraction.photos[index],
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        'assets/images/placeholder.jpg', // Ensure you have a placeholder image in assets
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             const SizedBox(

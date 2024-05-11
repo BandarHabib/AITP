@@ -70,8 +70,8 @@ class AttractionResultsScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20.0),
                                 child: AspectRatio(
                                   aspectRatio: 1.2,
-                                  child: Image.asset(
-                                    'assets/images/plan_your_trip.png',
+                                  child: Image.network(
+                                    attraction.photos[0],
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -133,6 +133,7 @@ class AttractionResultsScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 8),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12.0),
@@ -156,6 +157,7 @@ class AttractionResultsScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 8),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12.0),
