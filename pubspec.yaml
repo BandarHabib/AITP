@@ -27,6 +27,7 @@ dependencies:
   url_launcher: ^6.2.6
   flutter_svg: ^2.0.10+1
   marquee: ^2.2.0
+  flutter_rating_bar: ^4.0.1
 
   user_repository:
     path: packages/user_repository
