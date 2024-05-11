@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -6,9 +5,12 @@ import 'package:tp_app/screens/auth/blocs/sing_in_bloc/sign_in_bloc.dart';
 import 'package:tp_app/screens/find_landmark/views/find_landmark_screen.dart';
 import 'package:tp_app/screens/plan_trip/views/preferences_screen.dart';
 import 'package:tp_app/screens/user/views/user_profile_screen.dart';
+import 'package:user_repository/user_repository.dart'; // Ensure this path is correct
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  final UserRepository userRepo;
+
+  const LandingPage({super.key, required this.userRepo});
 
   @override
   LandingPageState createState() => LandingPageState();
@@ -22,22 +24,28 @@ class LandingPageState extends State<LandingPage> {
     'assets/images/cities/Dammam.jpg',
   ];
 
-  final List<Map<String, dynamic>> services = [
-    {
-      'label': 'Plan your Trip',
-      'image': 'assets/images/plan_your_trip.png',
-      'screen': const PreferencesScreen()
-    },
-    {
-      'label': 'Find the Landmark',
-      'image': 'assets/images/2.png',
-      'screen': FindLandmarkScreen()
-    },
-    {'label': 'Similar Places', 'image': 'assets/images/plan_your_trip.png'},
-    {'label': 'To be added', 'image': 'assets/images/4.png'},
-  ];
+  late List<Map<String, dynamic>> services;
 
   final CarouselController _carouselController = CarouselController();
+
+  @override
+  void initState() {
+    super.initState();
+    services = [
+      {
+        'label': 'Plan your Trip',
+        'image': 'assets/images/plan_your_trip.png',
+        'screen': PreferencesScreen(userRepo: widget.userRepo)
+      },
+      {
+        'label': 'Find the Landmark',
+        'image': 'assets/images/2.png',
+        'screen': FindLandmarkScreen()
+      },
+      {'label': 'Similar Places', 'image': 'assets/images/plan_your_trip.png'},
+      {'label': 'To be added', 'image': 'assets/images/4.png'},
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +58,7 @@ class LandingPageState extends State<LandingPage> {
             end: const Alignment(2, 2),
             colors: [
               theme.colorScheme.primary.withOpacity(0.7),
-              theme.colorScheme.secondary.withOpacity(0.2)
+              theme.colorScheme.secondary.withOpacity(0.2),
             ],
           ),
         ),
@@ -192,8 +200,8 @@ class LandingPageState extends State<LandingPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  const UserProfileScreen()), // Adjust as necessary
+              builder: (context) => UserProfileScreen(
+                  userRepo: widget.userRepo)), // Adjust as necessary
         );
         break;
       case 1: // Logout

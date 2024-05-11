@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:user_repository/user_repository.dart'; // Assuming this is where your MyUser class is defined
+import 'package:user_repository/user_repository.dart'; // Ensure this path is correct
 
 class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -39,7 +39,7 @@ class FirebaseUserRepo implements UserRepository {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
     } catch (e) {
-      log(e.toString());
+      log('SignIn Error: $e');
       rethrow;
     }
   }
@@ -56,7 +56,7 @@ class FirebaseUserRepo implements UserRepository {
       await setUserData(myUser);
       return myUser;
     } catch (e) {
-      log(e.toString());
+      log('SignUp Error: $e');
       rethrow;
     }
   }
@@ -73,7 +73,7 @@ class FirebaseUserRepo implements UserRepository {
           .doc(myUser.userId)
           .set(myUser.toEntity().toDocument());
     } catch (e) {
-      log(e.toString());
+      log('SetUserData Error: $e');
       rethrow;
     }
   }
@@ -88,7 +88,7 @@ class FirebaseUserRepo implements UserRepository {
           .doc(history.attractionId)
           .set(history.toEntity().toDocument());
     } catch (e) {
-      log(e.toString());
+      log('AddOrUpdateAttractionHistory Error: $e');
       rethrow;
     }
   }
@@ -105,8 +105,64 @@ class FirebaseUserRepo implements UserRepository {
                   doc.data() as Map<String, dynamic>)))
           .toList();
     } catch (e) {
-      log(e.toString());
+      log('GetAttractionHistory Error: $e');
       return [];
     }
+  }
+
+  @override
+  Future<void> addUserRating(
+      String userId, String attractionId, double rating) async {
+    try {
+      await usersCollection
+          .doc(userId)
+          .collection('attractionRatings')
+          .doc(attractionId)
+          .set({
+        'rating': rating,
+        'ratedOn': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      log('Error adding user rating: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, double>> getUserRatings(String userId) async {
+    try {
+      Map<String, double> ratings = {};
+      QuerySnapshot ratingsSnapshot = await usersCollection
+          .doc(userId)
+          .collection('attractionRatings')
+          .get();
+      for (var doc in ratingsSnapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          ratings[doc.id] = data['rating'] as double;
+        }
+      }
+      return ratings;
+    } catch (e) {
+      log('Error fetching user ratings: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, Map<String, double>>> getAllUserRatings() async {
+    Map<String, Map<String, double>> allRatings = {};
+    try {
+      QuerySnapshot usersSnapshot = await usersCollection.get();
+      for (var userDoc in usersSnapshot.docs) {
+        String userId = userDoc.id;
+        Map<String, double> userRatings = await getUserRatings(userId);
+        allRatings[userId] = userRatings;
+      }
+    } catch (e) {
+      log('Error fetching all user ratings: $e');
+      rethrow;
+    }
+    return allRatings;
   }
 }

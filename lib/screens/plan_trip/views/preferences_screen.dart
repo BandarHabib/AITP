@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../../services/attraction_service.dart';
-import 'package:tp_app/screens/plan_trip/views/attraction_results_screen.dart'; // Make sure this import points to your AttractionResultsScreen
+import 'package:tp_app/screens/plan_trip/views/attraction_results_screen.dart';
+import 'package:user_repository/user_repository.dart'; // Ensure this import points to your FirebaseUserRepo
 
 class PreferencesScreen extends StatelessWidget {
-  const PreferencesScreen({Key? key}) : super(key: key);
+  final UserRepository userRepo;
+
+  const PreferencesScreen({Key? key, required this.userRepo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _PreferencesForm();
+    return _PreferencesForm(userRepo: userRepo);
   }
 }
 
 class _PreferencesForm extends StatefulWidget {
+  final UserRepository userRepo;
+
+  _PreferencesForm({required this.userRepo});
+
   @override
   __PreferencesFormState createState() => __PreferencesFormState();
 }
@@ -50,8 +57,8 @@ class __PreferencesFormState extends State<_PreferencesForm> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  AttractionResultsScreen(attractions: matches),
+              builder: (context) => AttractionResultsScreen(
+                  attractions: matches, userRepo: widget.userRepo),
             ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

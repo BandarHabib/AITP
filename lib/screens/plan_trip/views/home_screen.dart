@@ -6,9 +6,11 @@ import 'package:tp_app/screens/auth/blocs/sing_in_bloc/sign_in_bloc.dart';
 import 'package:tp_app/screens/plan_trip/blocs/get_attraction_bloc/get_attraction_bloc.dart';
 import 'package:tp_app/screens/plan_trip/views/details_screen.dart';
 import 'package:tp_app/screens/plan_trip/views/preferences_screen.dart';
+import 'package:user_repository/user_repository.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.userRepo});
+  final FirebaseUserRepo userRepo;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +30,12 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () {
+                var widget;
                 Navigator.push(
                   context,
                   MaterialPageRoute<void>(
                     builder: (BuildContext context) =>
-                        const PreferencesScreen(),
+                        PreferencesScreen(userRepo: widget.userRepo),
                   ),
                 );
               },
@@ -70,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
-                                  DetailsScreen(state.attractions[i]),
+                                  DetailsScreen(state.attractions[i], userRepo),
                             ),
                           );
                         },

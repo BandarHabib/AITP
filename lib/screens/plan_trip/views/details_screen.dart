@@ -1,17 +1,48 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:attraction_repository/attraction_repository.dart';
+import 'package:user_repository/user_repository.dart'; // Assuming this is where your FirebaseUserRepo is defined
 import '../../../components/macro.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
   final Attraction attraction;
-  const DetailsScreen(this.attraction, {super.key});
+  final UserRepository userRepo;
+
+  const DetailsScreen(this.attraction, this.userRepo, {super.key});
+
+  @override
+  _DetailsScreenState createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  double _userRating = 3.0; // Initialize with a default value for the rating
 
   Future<void> _launchURL(String urlString) async {
     final url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $urlString';
+    }
+  }
+
+  void _submitRating() async {
+    print("User submitted rating: $_userRating");
+    // Assuming user ID is fetched from somewhere, perhaps from Firebase Auth or passed down to this widget
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
+    try {
+      await widget.userRepo
+          .addUserRating(userId!, widget.attraction.placeId, _userRating);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Rating submitted successfully!'),
+        backgroundColor: Colors.green,
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to submit rating: $e'),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 
@@ -22,18 +53,16 @@ class DetailsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width *
-                  (1 / 1.2), // Adjust height according to aspect ratio
+              height: MediaQuery.of(context).size.width * (1 / 1.2),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(30), // Outer container corner radius
+                borderRadius: BorderRadius.circular(30),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,
@@ -43,14 +72,13 @@ class DetailsScreen extends StatelessWidget {
                 ],
               ),
               child: ClipRRect(
-                borderRadius:
-                    BorderRadius.circular(30.0), // Image specific corner radius
-                child: attraction.photos.isNotEmpty
+                borderRadius: BorderRadius.circular(30.0),
+                child: widget.attraction.photos.isNotEmpty
                     ? PageView.builder(
-                        itemCount: attraction.photos.length,
+                        itemCount: widget.attraction.photos.length,
                         itemBuilder: (context, index) {
                           return Image.network(
-                            attraction.photos[index],
+                            widget.attraction.photos[index],
                             fit: BoxFit.cover,
                           );
                         },
@@ -61,9 +89,7 @@ class DetailsScreen extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -77,109 +103,86 @@ class DetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          flex: 2,
                           child: Text(
-                            attraction.name,
+                            widget.attraction.name,
                             style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '${attraction.stars} Stars',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                ),
-                              ],
-                            ),
+                        Text(
+                          '${widget.attraction.stars} Stars',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         )
                       ],
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         MyMacroWidget(
                           title: "Price",
-                          value: attraction.macros.price,
+                          value: widget.attraction.macros.price,
                           icon: FontAwesomeIcons.tag,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10),
                         MyMacroWidget(
                           title: "Reviews",
-                          value: attraction.macros.reviews,
-                          icon: FontAwesomeIcons.peopleGroup,
+                          value: widget.attraction.macros.reviews,
+                          icon: FontAwesomeIcons.receipt,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10),
                         MyMacroWidget(
                           title: "Capacity",
-                          value: attraction.macros.capacity,
+                          value: widget.attraction.macros.capacity,
                           icon: FontAwesomeIcons.peopleGroup,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              icon: const Icon(FontAwesomeIcons.locationDot,
-                                  color: Colors.red),
-                              onPressed: () =>
-                                  _launchURL(attraction.macros.link),
-                            ),
-                          ],
+                        const SizedBox(width: 15),
+                        IconButton(
+                          icon: const Icon(FontAwesomeIcons.locationDot,
+                              color: Colors.red),
+                          onPressed: () =>
+                              _launchURL(widget.attraction.macros.link),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 30,
+                    const SizedBox(height: 30),
+                    RatingBar.builder(
+                      initialRating: _userRating,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) =>
+                          const Icon(Icons.star, color: Colors.amber),
+                      onRatingUpdate: (rating) {
+                        setState(() {
+                          _userRating = rating;
+                        });
+                      },
                     ),
-                    const SizedBox(
-                      height: 30,
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _submitRating,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text("Submit Rating"),
                     ),
-
-                    // SizedBox(
-                    //   width: MediaQuery.of(context).size.width,
-                    //   height: 50,
-                    //   child: TextButton(
-                    //     onPressed: () {},
-                    //     style: TextButton.styleFrom(
-                    //         elevation: 3.0,
-                    //         backgroundColor: Colors.black,
-                    //         foregroundColor: Colors.white,
-                    //         shape: RoundedRectangleBorder(
-                    //             borderRadius: BorderRadius.circular(10))),
-                    //     child: const Text(
-                    //       "Submit",
-                    //       style: TextStyle(
-                    //           color: Colors.white,
-                    //           fontSize: 20,
-                    //           fontWeight: FontWeight.w600),
-                    //     ),
-                    //   ),
-                    // )
                   ],
                 ),
               ),

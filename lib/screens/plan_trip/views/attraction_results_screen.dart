@@ -3,11 +3,14 @@ import 'package:marquee/marquee.dart';
 import 'package:attraction_repository/attraction_repository.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tp_app/screens/plan_trip/views/details_screen.dart';
+import 'package:user_repository/user_repository.dart';
 
 class AttractionResultsScreen extends StatelessWidget {
   final List<Attraction> attractions;
+  final UserRepository userRepo;
 
-  const AttractionResultsScreen({Key? key, required this.attractions})
+  const AttractionResultsScreen(
+      {Key? key, required this.attractions, required this.userRepo})
       : super(key: key);
 
   @override
@@ -32,7 +35,7 @@ class AttractionResultsScreen extends StatelessWidget {
           child: attractions.isNotEmpty
               ? GridView.builder(
                   physics:
-                      NeverScrollableScrollPhysics(), // Important for nested scrolling
+                      const NeverScrollableScrollPhysics(), // Important for nested scrolling
                   shrinkWrap:
                       true, // Needed to make GridView work inside SingleChildScrollView
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -56,7 +59,7 @@ class AttractionResultsScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
-                                  DetailsScreen(attraction),
+                                  DetailsScreen(attraction, userRepo),
                             ),
                           );
                         },
@@ -148,11 +151,13 @@ class AttractionResultsScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   blankSpace: 20.0,
                                   velocity: 30.0,
-                                  pauseAfterRound: Duration(seconds: 1),
+                                  pauseAfterRound: const Duration(seconds: 1),
                                   startPadding: 10.0,
-                                  accelerationDuration: Duration(seconds: 1),
+                                  accelerationDuration:
+                                      const Duration(seconds: 1),
                                   accelerationCurve: Curves.linear,
-                                  decelerationDuration: Duration(seconds: 1),
+                                  decelerationDuration:
+                                      const Duration(seconds: 1),
                                   decelerationCurve: Curves.easeOut,
                                 ),
                               ),

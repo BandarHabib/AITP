@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:user_repository/user_repository.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+  final UserRepository userRepo;
+
+  const UserProfileScreen({super.key, required this.userRepo});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  User? user = FirebaseAuth.instance.currentUser;
-  DocumentSnapshot? userData;
+  MyUser? userData;
 
   @override
   void initState() {
@@ -20,18 +20,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> fetchUserDetails() async {
-    if (user != null) {
-      try {
-        DocumentSnapshot snapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .get();
-        setState(() {
-          userData = snapshot;
-        });
-      } catch (e) {
-        print('Error fetching user details: $e');
-      }
+    try {
+      widget.userRepo.user.listen((user) {
+        if (user != null) {
+          setState(() {
+            userData = user;
+          });
+        }
+      });
+    } catch (e) {
+      print('Error fetching user details: $e');
     }
   }
 
@@ -56,10 +54,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         'assets/images/user_avatar.png'), // Adjust as necessary
                   ),
                   const SizedBox(height: 20),
-                  Text('Name: ${userData!['name']}',
+                  Text('Name: ${userData!.name}',
                       style: theme.textTheme.headline6),
                   const SizedBox(height: 10),
-                  Text('Email: ${userData!['email']}',
+                  Text('Email: ${userData!.email}',
                       style: theme.textTheme.headline6),
                   const SizedBox(height: 10),
                   ElevatedButton(
