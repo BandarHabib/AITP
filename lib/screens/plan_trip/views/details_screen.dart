@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:attraction_repository/attraction_repository.dart';
 import '../../../components/macro.dart';
 
 class DetailsScreen extends StatelessWidget {
   final Attraction attraction;
   const DetailsScreen(this.attraction, {super.key});
+
+  Future<void> _launchURL(String urlString) async {
+    final url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $urlString';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,17 +140,26 @@ class DetailsScreen extends StatelessWidget {
                         const SizedBox(
                           width: 10,
                         ),
-                        // ignore: prefer_const_constructors
-                        MyMacroWidget(
-                          title: "link",
-                          value: 0,
-                          icon: FontAwesomeIcons.link,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(FontAwesomeIcons.locationDot,
+                                  color: Colors.red),
+                              onPressed: () =>
+                                  _launchURL(attraction.macros.link),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     const SizedBox(
                       height: 30,
                     ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+
                     // SizedBox(
                     //   width: MediaQuery.of(context).size.width,
                     //   height: 50,
@@ -155,7 +172,7 @@ class DetailsScreen extends StatelessWidget {
                     //         shape: RoundedRectangleBorder(
                     //             borderRadius: BorderRadius.circular(10))),
                     //     child: const Text(
-                    //       "Buy Now",
+                    //       "Submit",
                     //       style: TextStyle(
                     //           color: Colors.white,
                     //           fontSize: 20,
