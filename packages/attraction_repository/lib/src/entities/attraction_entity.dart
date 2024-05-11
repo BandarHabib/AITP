@@ -6,7 +6,7 @@ class AttractionEntity {
   String placeId;
   String name;
   String description;
-  List<String> pictures;
+  List<String> photos;
   String category;
   int expenses;
   double stars;
@@ -17,7 +17,7 @@ class AttractionEntity {
     required this.placeId,
     required this.name,
     required this.description,
-    required this.pictures,
+    required this.photos,
     required this.category,
     required this.expenses,
     required this.stars,
@@ -30,7 +30,7 @@ class AttractionEntity {
       'placeId': placeId,
       'name': name,
       'description': description,
-      'pictures': pictures,
+      'photos': photos,
       'category': category,
       'expenses': expenses,
       'stars': stars,
@@ -44,7 +44,7 @@ class AttractionEntity {
       placeId: doc['placeId'],
       name: doc['name'],
       description: doc['description'],
-      pictures: List<String>.from(doc['pictures'] ?? []),
+      photos: List<String>.from(doc['photos'] ?? []),
       category: doc['category'],
       expenses: doc['expenses'],
       stars: doc['stars'],

@@ -6,7 +6,7 @@ class Attraction {
   String placeId;
   String name;
   String description;
-  List<String> pictures;
+  List<String> photos;
   String category;
   int expenses;
   double stars;
@@ -17,7 +17,7 @@ class Attraction {
     required this.placeId,
     required this.name,
     required this.description,
-    required this.pictures,
+    required this.photos,
     required this.category,
     required this.expenses,
     required this.stars,
@@ -30,7 +30,7 @@ class Attraction {
       placeId: placeId,
       name: name,
       description: description,
-      pictures: pictures,
+      photos: photos,
       category: category,
       expenses: expenses,
       stars: stars,
@@ -44,7 +44,7 @@ class Attraction {
       placeId: entity.placeId,
       name: entity.name,
       description: entity.description,
-      pictures: entity.pictures,
+      photos: entity.photos,
       category: entity.category,
       expenses: entity.expenses,
       stars: entity.stars,
@@ -58,7 +58,7 @@ class Attraction {
       placeId: json['Place ID'] ?? '',
       name: json['Store Name'] ?? '',
       description: json['Overview'] ?? '',
-      pictures: List<String>.from(json['pictures'] ?? []),
+      photos: List<String>.from(json['photos'] ?? []),
       category: json['Category'] ?? '',
       expenses: json['Expenses'] ?? 0,
       stars: (json['Rating'] ?? 0).toDouble(),
