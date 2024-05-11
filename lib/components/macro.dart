@@ -29,8 +29,7 @@ class MyMacroWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Text(title == "link" ? 'Location' : title,
-                style: const TextStyle(fontSize: 10)),
+            Text(title, style: const TextStyle(fontSize: 10)),
             FaIcon(
               icon,
               color: Colors.blue[900],
@@ -41,9 +40,7 @@ class MyMacroWidget extends StatelessWidget {
                   ? '\$$value'
                   : title == "Capacity"
                       ? '$value +'
-                      : title == "link"
-                          ? 'Click Me'
-                          : '$value',
+                      : '$value',
               style: const TextStyle(fontSize: 10),
             )
           ],
