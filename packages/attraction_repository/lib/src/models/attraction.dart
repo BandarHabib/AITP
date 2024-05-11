@@ -58,7 +58,7 @@ class Attraction {
       placeId: json['Place ID'] ?? '',
       name: json['Store Name'] ?? '',
       description: json['Overview'] ?? '',
-      photos: List<String>.from(json['photos'] ?? []),
+      photos: List<String>.from(json['Photos'] ?? []),
       category: json['Category'] ?? '',
       expenses: json['Expenses'] ?? 0,
       stars: (json['Rating'] ?? 0).toDouble(),

@@ -44,7 +44,7 @@ class AttractionEntity {
       placeId: doc['placeId'],
       name: doc['name'],
       description: doc['description'],
-      photos: List<String>.from(doc['photos'] ?? []),
+      photos: List<String>.from(doc['Photos'] ?? []),
       category: doc['category'],
       expenses: doc['expenses'],
       stars: doc['stars'],
