@@ -16,4 +16,6 @@ abstract class UserRepository {
   Future<Map<String, double>> getUserRatings(String userId);
 
   Future<Map<String, Map<String, double>>> getAllUserRatings();
+
+  Future<String?> getCurrentUserId();
 }
