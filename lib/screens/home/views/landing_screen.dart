@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:tp_app/screens/auth/blocs/sing_in_bloc/sign_in_bloc.dart';
 import 'package:tp_app/screens/find_landmark/views/find_landmark_screen.dart';
 import 'package:tp_app/screens/plan_trip/views/preferences_screen.dart';
+import 'package:tp_app/screens/plan_trip/views/recommendations_screen.dart';
 import 'package:tp_app/screens/user/views/user_profile_screen.dart';
 import 'package:user_repository/user_repository.dart'; // Ensure this path is correct
 
@@ -24,14 +25,10 @@ class LandingPageState extends State<LandingPage> {
     'assets/images/cities/Dammam.jpg',
   ];
 
-  late List<Map<String, dynamic>> services;
-
   final CarouselController _carouselController = CarouselController();
 
-  @override
-  void initState() {
-    super.initState();
-    services = [
+  List<Map<String, dynamic>> getServices(String userId) {
+    return [
       {
         'label': 'Plan your Trip',
         'image': 'assets/images/plan_your_trip.png',
@@ -43,7 +40,11 @@ class LandingPageState extends State<LandingPage> {
         'screen': FindLandmarkScreen()
       },
       {'label': 'Similar Places', 'image': 'assets/images/plan_your_trip.png'},
-      {'label': 'To be added', 'image': 'assets/images/4.png'},
+      {
+        'label': 'Recommendations',
+        'image': 'assets/images/4.png',
+        'screen': RecommendationsScreen(userId: userId),
+      },
     ];
   }
 
@@ -140,50 +141,67 @@ class LandingPageState extends State<LandingPage> {
               }).toList(),
             ),
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.5,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                ),
-                itemCount: services.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                services[index]['screen'],
-                          ));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.background,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(services[index]['image'],
-                              width: 60, height: 60),
-                          Text(
-                            services[index]['label'],
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
+              child: FutureBuilder<String?>(
+                future: widget.userRepo.getCurrentUserId(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  }
+                  final userId = snapshot.data;
+                  if (userId == null) {
+                    return Center(child: Text("User not found"));
+                  }
+                  var services = getServices(userId);
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(20),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
                     ),
+                    itemCount: services.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    services[index]['screen'],
+                              ));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.background,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(services[index]['image'],
+                                  width: 60, height: 60),
+                              Text(
+                                services[index]['label'],
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
