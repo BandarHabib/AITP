@@ -21,6 +21,16 @@ def get_attractions_route():
     except Exception as e:
         app.logger.error("Error processing attractions: %s", str(e))
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/get_recommendations', methods=['GET'])
+def recommendations_route():
+    try:
+        recommendations = attraction_service.get_recommendations()
+        app.logger.debug("Recommendations: %s", recommendations)
+        return jsonify(recommendations)
+    except Exception as e:
+        app.logger.error("Error getting recommendations: %s", str(e))
+        return jsonify({'error': str(e)}), 500  
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,17 +1,25 @@
 from flask import Flask, request, jsonify
 import pandas as pd
 import ast
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 app = Flask(__name__)
 
-# Load the Excel file once to avoid reloading on each request
-file_path = 'backend\datasets\output_with_ratings.xlsx'
-data = pd.read_excel(file_path)
+# Initialize Firebase Admin
+cred = credentials.Certificate('D:/AITP/Backend/aitp-a2d14-firebase-adminsdk-eq91s-aa20b2ea74.json')
+firebase_admin.initialize_app(cred)
 
+# Get a reference to the Firestore service
+db = firestore.client()
+
+# Load the Excel file once to avoid reloading on each request
+file_path = 'backend/datasets/output_with_ratings.xlsx'
+data = pd.read_excel(file_path)
 data['Normalized Rating'] = (data['Rating'] - data['Rating'].min()) / (data['Rating'].max() - data['Rating'].min())
 data['Normalized Total User Ratings'] = (data['Total User Ratings'] - data['Total User Ratings'].min()) / (data['Total User Ratings'].max() - data['Total User Ratings'].min())
 
-@app.route('/get_attractions', methods=['POST'])
 def get_attractions(content):
     content = request.json
     city = content['city']
@@ -24,21 +32,10 @@ def get_attractions(content):
         top_category_matches = category_data.sort_values(by='Combined Score', ascending=False).head(2)
         top_matches = pd.concat([top_matches, top_category_matches])
 
-    print("\nTop matches based on your preferences:")
-    for category in user_preferences:
-        print(f"\nCategory: {category}")
-        category_matches = top_matches[top_matches['Top Category'] == category]
-        for _, match in category_matches.iterrows():
-            print(f"Store Name: {match['Name']}")
-            print(f"City: {match['City']}")
-            print(f"Rating: {match['Rating']}")
-            print(f"Reviews: {match['Total User Ratings']}")
-            print(f"Score: {match['Combined Score']:.2f}")
-    
     results = []
     for _, match in top_matches.iterrows():
         results.append({
-            'Place ID': str(match['place_id']),  # Convert IDs to string if they are not serializable
+            'Place ID': str(match['place_id']),
             'Store Name': match['Name'],
             'City': match['City'],
             'Category': match['Category'],
@@ -53,9 +50,40 @@ def get_attractions(content):
                 'capacity': 0,
                 'link': match['URL']
             }
-
         })
     return results
+
+def get_recommendations():
+    try:
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return {'error': 'User ID is required'}, 400
+
+        # Your existing code here to retrieve and process recommendations
+        # Retrieve all attraction ratings for all users
+        all_ratings = {}
+        users_ref = db.collection('users').stream()
+        for user_doc in users_ref:
+            user_id = user_doc.id
+            attraction_ratings_ref = user_doc.reference.collection('attractionRatings').stream()
+            for rating_doc in attraction_ratings_ref:
+                rating_data = rating_doc.to_dict()
+                rating_data['userID'] = user_id
+                attraction_id = rating_doc.id
+                all_ratings[attraction_id] = rating_data
+
+        # Convert ratings to DataFrame
+        ratings_df = pd.DataFrame.from_dict(all_ratings, orient='index')
+        ratings_df.index.name = 'AttractionID'
+        ratings_df.reset_index(inplace=True)
+
+        # Reorder columns
+        ratings_df = ratings_df[['userID', 'AttractionID', 'rating']]
+
+        return ratings_df.to_dict(orient='records'), 200
+    except Exception as e:
+        return {'error': str(e)}, 500
+
 
 
 if __name__ == '__main__':
