@@ -34,6 +34,11 @@ class FirebaseUserRepo implements UserRepository {
   }
 
   @override
+  Future<String?> getCurrentUserId() async {
+    return _firebaseAuth.currentUser?.uid;
+  }
+
+  @override
   Future<void> signIn(String email, String password) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
