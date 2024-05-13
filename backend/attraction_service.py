@@ -80,7 +80,37 @@ def get_recommendations():
         # Reorder columns
         ratings_df = ratings_df[['userID', 'AttractionID', 'rating']]
 
-        return ratings_df.to_dict(orient='records'), 200
+        pivot_table = pd.pivot_table(ratings_df, values='rating', index='userID', columns='AttractionID', fill_value=0)
+
+        place_similaraty = pivot_table.corr(method='pearson')
+
+        place_similaraty.to_excel('backend/datasets/pivot_table.xlsx')
+
+        # Get user ratings
+        user_id = request.args.get('user_id')
+        user_ratings = ratings_df[ratings_df['userID'] == user_id][['AttractionID', 'rating']].values.tolist()
+
+        def get_similar_place(Place_Name,User_Rating):
+            similar_score = (place_similaraty[Place_Name]*(User_Rating-2.5))/2.5
+            similar_score = similar_score.sort_values(ascending = False)
+            return similar_score
+
+        # Create a DataFrame from the similarity scores
+        similar_places = pd.DataFrame([get_similar_place(place, rating) for place, rating in user_ratings])
+
+        # Resetting the index
+        similar_places.reset_index(drop=True, inplace=True)
+
+        # Drop the places that the user has rated from the DataFrame
+        for place, _ in user_ratings:
+            if place in similar_places.columns:
+                similar_places = similar_places.drop(place, axis=1)
+
+        # Sum the scores for each place and sort them, then reset the index to convert into a DataFrame
+        result_df = similar_places.sum().sort_values(ascending=False).reset_index()
+        result_df.columns = ['Name', 'Collaborative_filteringScore']  # Rename the columns
+
+        return result_df.to_dict(orient='records'), 200
     except Exception as e:
         return {'error': str(e)}, 500
 
