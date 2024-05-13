@@ -31,18 +31,18 @@ class LandingPageState extends State<LandingPage> {
     return [
       {
         'label': 'Plan your Trip',
-        'image': 'assets/images/plan_your_trip.png',
+        'image': 'assets/images/plan.png',
         'screen': PreferencesScreen(userRepo: widget.userRepo)
       },
       {
         'label': 'Find the Landmark',
-        'image': 'assets/images/2.png',
+        'image': 'assets/images/camera.png',
         'screen': FindLandmarkScreen()
       },
-      {'label': 'Similar Places', 'image': 'assets/images/plan_your_trip.png'},
+      {'label': 'Similar Places', 'image': 'assets/images/location.png'},
       {
         'label': 'Recommendations',
-        'image': 'assets/images/4.png',
+        'image': 'assets/images/recommendations.png',
         'screen': RecommendationsScreen(userId: userId),
       },
     ];
@@ -145,14 +145,14 @@ class LandingPageState extends State<LandingPage> {
                 future: widget.userRepo.getCurrentUserId(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   final userId = snapshot.data;
                   if (userId == null) {
-                    return Center(child: Text("User not found"));
+                    return const Center(child: Text("User not found"));
                   }
                   var services = getServices(userId);
                   return GridView.builder(
