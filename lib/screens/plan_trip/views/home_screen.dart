@@ -34,8 +34,10 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                        PreferencesScreen(userRepo: widget.userRepo),
+                    builder: (BuildContext context) => PreferencesScreen(
+                      userRepo: widget.userRepo,
+                      userId: '',
+                    ),
                   ),
                 );
               },

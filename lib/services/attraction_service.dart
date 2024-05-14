@@ -7,10 +7,11 @@ class AttractionService {
 
   AttractionService(this.baseUrl);
 
-  Future<dynamic> getAttractions(String city, List<String> categories) async {
+  Future<dynamic> getAttractions(
+      String city, List<String> categories, String userId) async {
     try {
       var response = await http.post(
-        Uri.parse('$baseUrl/get_attractions'),
+        Uri.parse('$baseUrl/get_attractions?user_id=$userId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

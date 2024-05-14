@@ -32,18 +32,24 @@ class LandingPageState extends State<LandingPage> {
       {
         'label': 'Plan your Trip',
         'image': 'assets/images/plan.png',
-        'screen': PreferencesScreen(userRepo: widget.userRepo)
+        'screen': PreferencesScreen(userRepo: widget.userRepo, userId: userId)
       },
       {
         'label': 'Find the Landmark',
         'image': 'assets/images/camera.png',
         'screen': FindLandmarkScreen()
       },
-      {'label': 'Similar Places', 'image': 'assets/images/location.png'},
+      {
+        'label': 'Similar Places',
+        'image': 'assets/images/location.png',
+        'screen':
+            RecommendationsScreen(userId: userId, userRepo: widget.userRepo),
+      },
       {
         'label': 'Recommendations',
         'image': 'assets/images/recommendations.png',
-        'screen': RecommendationsScreen(userId: userId),
+        'screen':
+            RecommendationsScreen(userId: userId, userRepo: widget.userRepo),
       },
     ];
   }

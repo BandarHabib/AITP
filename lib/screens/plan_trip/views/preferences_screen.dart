@@ -5,19 +5,23 @@ import 'package:user_repository/user_repository.dart'; // Ensure this import poi
 
 class PreferencesScreen extends StatelessWidget {
   final UserRepository userRepo;
+  final String userId;
 
-  const PreferencesScreen({Key? key, required this.userRepo}) : super(key: key);
+  const PreferencesScreen(
+      {Key? key, required this.userRepo, required this.userId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _PreferencesForm(userRepo: userRepo);
+    return _PreferencesForm(userRepo: userRepo, userId: userId);
   }
 }
 
 class _PreferencesForm extends StatefulWidget {
   final UserRepository userRepo;
+  final String userId;
 
-  _PreferencesForm({required this.userRepo});
+  const _PreferencesForm({required this.userRepo, required this.userId});
 
   @override
   __PreferencesFormState createState() => __PreferencesFormState();
@@ -52,7 +56,7 @@ class __PreferencesFormState extends State<_PreferencesForm> {
 
     try {
       var matches = await _attractionService.getAttractions(
-          selectedCity!, selectedCategories);
+          selectedCity!, selectedCategories, widget.userId);
       if (matches.isNotEmpty) {
         Navigator.push(
             context,

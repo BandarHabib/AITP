@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:attraction_repository/attraction_repository.dart';
+import 'package:tp_app/screens/plan_trip/views/Widgets/attraction_card.dart';
 import 'package:tp_app/services/recommendation_service.dart';
+import 'package:user_repository/user_repository.dart';
 
 class RecommendationsScreen extends StatefulWidget {
   final String userId;
+  final UserRepository userRepo;
 
-  const RecommendationsScreen({Key? key, required this.userId})
-      : super(key: key);
+  const RecommendationsScreen({
+    Key? key,
+    required this.userId,
+    required this.userRepo,
+  }) : super(key: key);
 
   @override
   _RecommendationsScreenState createState() => _RecommendationsScreenState();
@@ -36,31 +42,37 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
-                child:
-                    Text("Failed to load recommendations: ${snapshot.error}"));
+              child: Text("Failed to load recommendations: ${snapshot.error}"),
+            );
           } else {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 9 / 15,
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: snapshot.data!.isNotEmpty
+                    ? GridView.builder(
+                        physics:
+                            const NeverScrollableScrollPhysics(), // Important for nested scrolling
+                        shrinkWrap:
+                            true, // Needed to make GridView work inside SingleChildScrollView
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 9 / 15,
+                        ),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return AttractionCard(
+                            attraction: snapshot.data![index],
+                            userRepo: widget.userRepo,
+                          );
+                        },
+                      )
+                    : const Center(
+                        child: Text("No recommendations found"),
+                      ),
               ),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                Attraction attraction = snapshot.data![index];
-                return Card(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                          child: Image.network(attraction.photos.first,
-                              fit: BoxFit.cover)),
-                      Text(attraction.name),
-                      Text('${attraction.stars} Stars'),
-                    ],
-                  ),
-                );
-              },
             );
           }
         },
