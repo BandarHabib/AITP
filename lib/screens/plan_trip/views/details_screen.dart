@@ -80,6 +80,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           return Image.network(
                             widget.attraction.photos[index],
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.broken_image, size: 48),
                           );
                         },
                       )

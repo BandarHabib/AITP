@@ -37,19 +37,22 @@ class AttractionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 3),
-            Transform.scale(
-              scale: 0.9,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: AspectRatio(
-                  aspectRatio: 1.2,
-                  child: Image.network(
-                    attraction.photos[0],
-                    fit: BoxFit.cover,
+            if (attraction.photos.isNotEmpty && attraction.photos[0].isNotEmpty)
+              Transform.scale(
+                scale: 0.9,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: AspectRatio(
+                    aspectRatio: 1.2,
+                    child: Image.network(
+                      attraction.photos[0],
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.broken_image, size: 48),
+                    ),
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
