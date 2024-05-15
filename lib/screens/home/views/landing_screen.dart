@@ -18,11 +18,23 @@ class LandingPage extends StatefulWidget {
 }
 
 class LandingPageState extends State<LandingPage> {
-  int _current = 0;
-  final List<String> imgList = [
-    'assets/images/cities/Jeddah.jpg',
-    'assets/images/cities/Riyadh.jpg',
-    'assets/images/cities/Dammam.jpg',
+  final ValueNotifier<int> _current = ValueNotifier<int>(0);
+  final List<Map<String, dynamic>> imgList = [
+    {
+      'image': 'assets/images/cities/Jeddah.jpg',
+      'city': 'Jeddah',
+      'position': {'bottom': 10.0, 'left': 60.0},
+    },
+    {
+      'image': 'assets/images/cities/Riyadh.jpg',
+      'city': 'Riyadh',
+      'position': {'bottom': 10.0, 'left': 35.0},
+    },
+    {
+      'image': 'assets/images/cities/Dammam.jpg',
+      'city': 'Dammam',
+      'position': {'bottom': 10.0, 'left': 60.0},
+    },
   ];
 
   final CarouselController _carouselController = CarouselController();
@@ -106,45 +118,85 @@ class LandingPageState extends State<LandingPage> {
             ),
             CarouselSlider(
               options: CarouselOptions(
-                  viewportFraction: 1,
-                  autoPlay: false,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  }),
-              items: imgList
-                  .map((item) => Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20.0),
-                          child: Image.asset(item, fit: BoxFit.cover),
-                        ),
-                      ))
-                  .toList(),
-              carouselController: _carouselController,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: imgList.asMap().entries.map((entry) {
-                return GestureDetector(
-                  onTap: () => _carouselController.animateToPage(entry.key),
-                  child: Container(
-                    width: 20.0,
-                    height: 6.0,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 14.0, horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      color: _current == entry.key
-                          ? theme.colorScheme.secondary
-                          : theme.colorScheme.onBackground.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(4.0),
+                viewportFraction: 1,
+                autoPlay: false,
+                aspectRatio: 2.0,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) {
+                  _current.value = index;
+                },
+              ),
+              items: imgList.map((item) {
+                final position = item['position'] as Map<String, double>;
+                return Stack(
+                  children: [
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20.0),
+                        child: Image.asset(item['image'], fit: BoxFit.cover),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: position['bottom'],
+                      top: position['top'],
+                      left: position['left'],
+                      right: position['right'],
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 4.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              item['city'],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }).toList(),
+              carouselController: _carouselController,
+            ),
+            ValueListenableBuilder<int>(
+              valueListenable: _current,
+              builder: (context, current, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: imgList.asMap().entries.map((entry) {
+                    return GestureDetector(
+                      onTap: () => _carouselController.animateToPage(entry.key),
+                      child: Container(
+                        width: 20.0,
+                        height: 6.0,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 14.0, horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: current == entry.key
+                              ? theme.colorScheme.secondary
+                              : theme.colorScheme.onBackground.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
             ),
             Expanded(
               child: FutureBuilder<String?>(
